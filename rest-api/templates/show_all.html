@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang = "en">
+   <head></head>
+   <body>
+      
+      <h3>
+         Ratings overview( <a href = "{{ url_for('show_all') }}">Reload</a>)
+      </h3>
+      
+      {%- for message in get_flashed_messages() %}
+         {{ message }}
+      {%- endfor %}
+		
+      <h3>Ratings (<a href = "{{ url_for('new') }}">Add Ratings
+         </a>)</h3>
+      
+      <table>
+         <thead>
+            <tr>
+               <th>Custom_Id</th>
+               <th>Question</th>
+               <th>Result</th>
+               <th>Rating</th>
+               <th>Date</th>
+            </tr>
+         </thead>
+         
+         <tbody>
+            {% for rating in ratings %}
+               <tr>
+                  <td>{{ rating.custom_id }}</td>
+                  <td>{{ rating.question }}</td>
+                  <td>{{ rating.result }}</td>
+                  <td>{{ rating.rating }}</td>
+                  <td>{{ rating.date }}</td>
+               </tr>
+            {% endfor %}
+         </tbody>
+      </table>
+      
+   </body>
+</html>

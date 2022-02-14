@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+   <body>
+      <h3>
+         <a href = "{{ url_for('show_all') }}"> <= Back to ratings overview </a>
+      </h3>
+      <h3>Insert Ratings</h3>
+      <hr/>
+      
+      {%- for category, message in get_flashed_messages(with_categories = true) %}
+         <div class = "alert alert-danger">
+            {{ message }}
+         </div>
+      {%- endfor %}
+      
+      <form action = "{{ request.path }}" method = "post">
+         <label for = "question">Question</label><br>
+         <input type = "text" name = "question" placeholder = "Question" /><br>
+         <label for = "question">Result</label><br>
+         <input type = "text" name = "result" placeholder = "Result" /><br>
+         <label for = "rating">Rating</label><br>
+         <input type = "text" name = "rating" placeholder = "Ratings" /><br>
+         <input type = "submit" value = "Submit" />
+      </form>
+      
+   </body>
+</html>
