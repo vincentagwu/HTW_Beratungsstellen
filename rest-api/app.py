@@ -1,7 +1,6 @@
 from flask import Flask, render_template, abort, request, jsonify, render_template, send_file, make_response, flash, redirect, url_for
 from flask_restful import Api, Resource, abort, reqparse
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 from sqlalchemy import desc
 from datetime import datetime, date
 from flask_cors import CORS, cross_origin
@@ -13,8 +12,6 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import requests
 import os
-#import translators as ts
-#from googletrans import Translator
 from deep_translator import (GoogleTranslator,
                              PonsTranslator,
                              LingueeTranslator,
@@ -62,11 +59,7 @@ db.create_all()
 IS_DEV = app.env == 'development'
 
 CORS(app)
-#migrate = Migrate(app, db)
 api = Api(app)
-
-
-#array =[{"asta": {"Kontakt":{"Öffnungszeiten":"Mo,Di,Do: 07:00 - 15:00 Uhr"}}}, {"bim", {""}}, {"fachschaften", {""}}, {"familienbuero", {""}}, {"frauen_und_gleichstellung", {""}}, {"international_office", {""}}, {"lanadema", {""}}, {"mathecafe", {""}}, {"pruefungsamt", {""}}, {"studienverlaufsberatung", {""}}, {"studieren_mit_behinderung", {""}}, {"studierendensekretariat", {""}}]
 
 API_URL = "https://api-inference.huggingface.co/models/rodrigogelacio/autonlp-department-classification-534915130"
 headers = {"Authorization": "Bearer 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"}
@@ -140,7 +133,7 @@ def new():
 
     try:
         get_id = Ratings.query.order_by(desc('id')).first()
-        x: int = get_id.id + 1
+        x = get_id.id + 1
         y = date.today().strftime("%y%m")
         if get_id:
             custom_id = "" + y + str(x).zfill(3) + ""
@@ -166,8 +159,6 @@ def new():
 
 @app.route('/newRating', methods = ['GET','POST'])
 def newRating():
-
-    #print("TESSSSSSSSSSSSSSSSSSSSST: " + request.data.json)
     try:
         get_id = Ratings.query.order_by(desc('id')).first()
         x: int = get_id.id + 1
@@ -198,10 +189,7 @@ def newRating():
             db.session.commit()
             return jsonify(message="POST request returned")
             flash('Record was successfully added')
-            #return jsonify(add_rating)
-            # flash('Record was successfully added')
             return redirect(url_for('show_all'))
-        #return render_template('new.html')
 
 @app.route('/')
 def home():
