@@ -25,7 +25,7 @@ from deep_translator import (GoogleTranslator,
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ratings.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/www/htw_beratungsstelle_api/ratings.sqlite3'
 db = SQLAlchemy(app)
 
 class Ratings(db.Model):
