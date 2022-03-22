@@ -12,6 +12,8 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import requests
 import os
+import logging
+from datetime import datetime
 from deep_translator import (GoogleTranslator,
                              PonsTranslator,
                              LingueeTranslator,
@@ -25,6 +27,10 @@ from deep_translator import (GoogleTranslator,
 
 
 app = Flask(__name__)
+now = datetime.now()
+dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+logging.basicConfig(filename=datetime.now().strftime('logs/logfile_%H_%M_%d_%m_%Y.log'), level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ratings.sqlite3'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/www/htw_beratungsstelle_api/ratings.sqlite3'
 db = SQLAlchemy(app)
 
@@ -68,28 +74,22 @@ headers = {"Authorization": "Bearer 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"}
 # New 
 output = {}
 
-def sentiment(sentence):
-
-    nltk.download('vader_lexicon')
-    sid = SentimentIntensityAnalyzer()
-    score = sid.polarity_scores(sentence)['compound']
-    if(score>0):
-        return "Positive"
-    else:
-        return "Negative"
-
 def question(sentence):
     translated = GoogleTranslator(source='auto', target='de').translate(sentence)
     print("translated: " + translated)
+    #app.logger.info('sentence: ' + sentence + ', translated: ' + translated )
     output = query({"inputs": translated})
     print(output)
-    
+    logging.info('Question entered: ' + output)
+
     return output
 
 def addRating(question, result, rating):
+    #app.logger.info('Add rating')
     output = queryRating({"question": question, "result": result, "rating": rating})
+    #app.logger.info('question: ' + question + ', result: ' + result + ', rating: ' + rating)
     print(output)
-    
+    logging.info('New rating: ' + output)
     return output
 
 
@@ -116,11 +116,12 @@ def sentimentRequest():
         sentence = request.args.get('q')
         sent = question(sentence)
         output['answers'] = sent
+        logging.info('Successfully requested question - question: ' + sentence )
         return jsonify(output)
 
 
 def json_response(payload, status=200):
- return (json.dumps(payload), status, {'content-type': 'application/json'})
+    return (json.dumps(payload), status, {'content-type': 'application/json'})
 
 @app.route("/rating")
 def show_all():
@@ -142,6 +143,7 @@ def new():
     finally:
         if request.method == 'POST':
             if not request.form['question'] or not request.form['rating'] or not request.form['result']:
+                logging.error('Entered not all needed fields for rating - question: ' + request.form['question'] + ', result: ' + request.form['result'] + ', rating: ' + request.form['rating'])
                 flash('Please enter all the fields', 'error')
             else:
                 add_rating = Ratings(
@@ -151,7 +153,7 @@ def new():
                 rating = request.form['rating'])
                 db.session.add(add_rating)
                 db.session.commit()
-                
+                logging.info('Successfully added rating - question: ' + request.form['question'] + ', result: ' + request.form['result'] + ', rating: ' + request.form['rating'])
                 flash('Record was successfully added')
                 return redirect(url_for('show_all'))
         return render_template('new.html')
@@ -187,15 +189,18 @@ def newRating():
             )
             db.session.add(add_rating)
             db.session.commit()
+            logging.info('Added new rating: ' + 'custom_id: ' + custom_id + 'question: ' + question + 'result: ' + result + 'rating: ' + rating)
             return jsonify(message="POST request returned")
             flash('Record was successfully added')
             return redirect(url_for('show_all'))
 
 @app.route('/')
 def home():
+    logging.info('Back at homescreen of the HTW-Beratungsstellen-API')
     return  render_template('index.html')
 
 if __name__ == "__main__":
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True)
+    logging.info('Flask-API started: Started HTW-Beratungsstellen-API')
