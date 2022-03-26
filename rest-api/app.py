@@ -14,16 +14,7 @@ import requests
 import os
 import logging
 from datetime import datetime
-from deep_translator import (GoogleTranslator,
-                             PonsTranslator,
-                             LingueeTranslator,
-                             MyMemoryTranslator,
-                             YandexTranslator,
-                             DeepL,
-                             QCRI,
-                             single_detection,
-                             batch_detection)
-
+from deep_translator import (GoogleTranslator)
 
 
 app = Flask(__name__)
@@ -31,6 +22,7 @@ now = datetime.now()
 dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
 logging.basicConfig(filename=datetime.now().strftime('/var/www/htw_beratungsstelle_api/logs/logfile_%H_%M_%d_%m_%Y.log'), level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+#logging.basicConfig(filename=datetime.now().strftime('logs/logfile_%H_%M_%d_%m_%Y.log'), level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ratings.sqlite3'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/www/htw_beratungsstelle_api/ratings.sqlite3'
 db = SQLAlchemy(app)
@@ -81,7 +73,7 @@ def question(sentence):
     #app.logger.info('sentence: ' + sentence + ', translated: ' + translated )
     output = query({"inputs": translated})
     print(output)
-    logging.info('Question entered: ' + output)
+    #logging.info('Question entered: ' + output)
 
     return output
 
