@@ -98,6 +98,7 @@ pydeck==0.6.1
 PyExecJS==1.5.1
 Pygments==2.8.1
 pylint==2.7.2
+pyngrok==5.1.0
 pyparsing==2.4.7
 pyrsistent==0.17.3
 PySocks==1.7.1
@@ -149,4 +150,3 @@ win32-setctime==1.1.0
 wrapt==1.12.1
 WTForms==3.0.1
 zipp==3.7.0
-gunicorn
