@@ -149,3 +149,4 @@ win32-setctime==1.1.0
 wrapt==1.12.1
 WTForms==3.0.1
 zipp==3.7.0
+gunicorn
