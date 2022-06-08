@@ -14,16 +14,7 @@ import requests
 import os
 import logging
 from datetime import datetime
-from deep_translator import (GoogleTranslator,
-                             PonsTranslator,
-                             LingueeTranslator,
-                             MyMemoryTranslator,
-                             YandexTranslator,
-                             DeepL,
-                             QCRI,
-                             single_detection,
-                             batch_detection)
-
+from deep_translator import (GoogleTranslator)
 
 
 app = Flask(__name__)
