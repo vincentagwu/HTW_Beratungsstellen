@@ -15,6 +15,7 @@ import os
 import logging
 from datetime import datetime
 from deep_translator import (GoogleTranslator)
+import torch
 
 
 app = Flask(__name__)
@@ -59,21 +60,34 @@ CORS(app)
 api = Api(app)
 
 API_URL = "https://api-inference.huggingface.co/models/rodrigogelacio/autonlp-department-classification-534915130"
-headers = {"Authorization": "Bearer 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"}
+headers = {"Authorization": "Bearer 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"}
 
 
 # New 
 output = {}
 
 def question(sentence):
+    # Translate and fetch model prediction
     translated = GoogleTranslator(source='auto', target='de').translate(sentence)
-    print("translated: " + translated)
-    #app.logger.info('sentence: ' + sentence + ', translated: ' + translated )
-    output = query({"inputs": translated})
-    print(output)
-    #logging.info('Question entered: ' + output)
-
-    return output
+    print("translated:", translated)
+    
+    # Use model and tokenizer for classification
+    tokenizer = AutoTokenizer.from_pretrained("rodrigogelacio/autonlp-department-classification-534915130")
+    model = AutoModelForSequenceClassification.from_pretrained("rodrigogelacio/autonlp-department-classification-534915130")
+    
+    inputs = tokenizer(translated, return_tensors="pt")
+    with torch.no_grad():
+        outputs = model(**inputs)
+    
+    predicted_class = torch.argmax(outputs.logits, dim=1).item()
+    print(f"Predicted class: {predicted_class}")
+    
+    # Structure output
+    # model_output = query({"inputs": translated})
+    # output = {"model_output": model_output, "predicted_class": predicted_class}
+    # print("Output:", json.dumps(output))
+    
+    return predicted_class
 
 def addRating(question, result, rating):
     #app.logger.info('Add rating')
